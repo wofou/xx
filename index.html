@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>前后端互通演示</title>
+    <style>
+        button {margin: 10px; padding: 6px 12px;}
+        #box {margin-top: 20px; padding: 10px; border: 1px solid #ccc;}
+    </style>
+</head>
+<body>
+    <h3>前后端请求测试</h3>
+
+    <!-- 输入框，用于提交数据到后端 -->
+    <div>
+        姓名：<input type="text" id="username" placeholder="请输入姓名">
+        内容：<input type="text" id="msg" placeholder="请输入消息">
+    </div>
+
+    <!-- 按钮 -->
+    <button onclick="getData()">GET 请求（拿后端数据）</button>
+    <button onclick="sendData()">POST 请求（传给后端数据）</button>
+
+    <!-- 展示后端返回的结果 -->
+    <div id="box">等待请求结果...</div>
+
+    <script>
+        // 后端接口基础地址
+        const baseUrl = "http://127.0.0.1:8001/api";
+        const box = document.getElementById("box");
+
+        // 1. GET 请求：从后端获取数据
+        async function getData() {
+            try {
+                // 发起网络请求
+                let res = await fetch(`${baseUrl}/get_msg`);
+                // 解析 JSON 数据
+                let data = await res.json();
+                // 把结果展示到页面
+                box.innerText = "GET 结果：" + data.data;
+            } catch (err) {
+                box.innerText = "请求失败：" + err;
+            }
+        }
+
+        // 2. POST 请求：向前端传数据，后端处理后返回
+        async function sendData() {
+            let name = document.getElementById("username").value;
+            let content = document.getElementById("msg").value;
+
+            try {
+                // 拼接参数发起 POST 请求
+                let res = await fetch(`${baseUrl}/post_data?name=${name}&content=${content}`, {
+                    method: "POST"
+                });
+                let data = await res.json();
+                box.innerText = "POST 结果：" + data.result;
+            } catch (err) {
+                box.innerText = "请求失败：" + err;
+            }
+        }
+    </script>
+</body>
+</html>
